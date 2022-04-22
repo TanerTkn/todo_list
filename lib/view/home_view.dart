@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_list/core/constant/color_constant.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:kartal/kartal.dart';
+import 'package:todo_list/widgets/task_delete.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -22,10 +24,10 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     CollectionReference tasks = firestore.collection('tasks');
-
     return DefaultTabController(
         length: 2,
         child: Scaffold(
+          backgroundColor: ColorConstants.background,
           body: TabBarView(
             children: [
               StreamBuilder<QuerySnapshot>(
@@ -38,56 +40,156 @@ class _HomeViewState extends State<HomeView> {
                   } else {
                     if (asyncSnapshot.hasData) {
                       List<DocumentSnapshot> listSnap = asyncSnapshot.data.docs;
-                      return ListView.builder(
-                        itemCount: listSnap.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: StyledText(
-                                  text: '${listSnap[index]['taskName']}'),
-                              subtitle: StyledText(
-                                  text:
-                                      '${listSnap[index]['taskDescription']}'),
-                              trailing: IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            backgroundColor: Colors.white,
-                                            title:
-                                                const StyledText(text: 'Sil'),
-                                            content: const StyledText(
-                                                text:
-                                                    'Silmek istediğine emin misin?'),
-                                            actions: [
-                                              TextButton(
-                                                  onPressed: () async {
-                                                    await listSnap[index]
-                                                        .reference
-                                                        .delete();
-
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: const StyledText(
-                                                      text: 'Sil')),
-                                              TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: const StyledText(
-                                                      text: 'İptal'))
-                                            ],
-                                          );
-                                        });
-                                  },
-                                  icon: const Icon(
-                                    EvaIcons.trash2Outline,
-                                    color: Colors.red,
-                                  )),
+                      return Padding(
+                        padding: context.paddingMedium,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: context.dynamicHeight(0.05)),
+                            const StyledText(
+                              text: 'Hoşgeldin!',
+                              color: ColorConstants.grey,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
+                            const StyledText(
+                              text: 'İşte Yapılacaklar Listen.',
+                              color: ColorConstants.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                            SizedBox(height: context.dynamicHeight(0.03)),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: listSnap.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  color: ColorConstants.orangeColor,
+                                  child: ListTile(
+                                    title: StyledText(
+                                        text: '${listSnap[index]['taskName']}'),
+                                    subtitle: StyledText(
+                                        text:
+                                            '${listSnap[index]['taskDescription']}'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      content: SizedBox(
+                                                        width: context
+                                                            .dynamicWidth(0.20),
+                                                        height: context
+                                                            .dynamicHeight(
+                                                                0.30),
+                                                        child: Form(
+                                                          key: formKey,
+                                                          child: Column(
+                                                            children: [
+                                                              TextField(
+                                                                controller:
+                                                                    taskName,
+                                                                decoration:
+                                                                    InputDecoration(
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                        ),
+                                                                        labelText:
+                                                                            'Görev Ekle'),
+                                                              ),
+                                                              SizedBox(
+                                                                  height: context
+                                                                      .dynamicHeight(
+                                                                          0.05)),
+                                                              TextField(
+                                                                controller:
+                                                                    taskDescription,
+                                                                decoration:
+                                                                    InputDecoration(
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                        ),
+                                                                        labelText:
+                                                                            'Görev Açıklaması'),
+                                                              ),
+                                                              SizedBox(
+                                                                  height: context
+                                                                      .dynamicHeight(
+                                                                          0.03)),
+                                                              ElevatedButton(
+                                                                style: ButtonStyle(
+                                                                    backgroundColor:
+                                                                        MaterialStateProperty.all(
+                                                                            ColorConstants.orangeColor)),
+                                                                onPressed:
+                                                                    () async {
+                                                                  Map<String,
+                                                                          dynamic>
+                                                                      taskEdit =
+                                                                      {
+                                                                    'taskName':
+                                                                        taskName,
+                                                                    'taskDescription':
+                                                                        taskDescription,
+                                                                  };
+
+                                                                  tasks
+                                                                      .doc(taskName
+                                                                          .text)
+                                                                      .update(
+                                                                          taskEdit)
+                                                                      .whenComplete(
+                                                                          () {
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                            msg:
+                                                                                'guncellendi');
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    const StyledText(
+                                                                  text:
+                                                                      'Kaydet',
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  });
+                                            },
+                                            icon: const Icon(
+                                              EvaIcons.editOutline,
+                                              color: Colors.white,
+                                            )),
+                                        TaskDelete(
+                                          listSnap: listSnap,
+                                          index: index,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       );
                     } else {
                       return const Center(child: CircularProgressIndicator());
@@ -100,7 +202,22 @@ class _HomeViewState extends State<HomeView> {
               )
             ],
           ),
-          floatingActionButton: FloatingActionButton(
+
+          //----------------------------- FLOAT ACTION BUTTON ----------------------------//
+
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: FloatingActionButton.extended(
+            label: const StyledText(
+              text: 'Yeni Görev',
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+            icon: const Icon(
+              EvaIcons.plus,
+              color: Colors.white,
+            ),
+            backgroundColor: ColorConstants.orangeColor,
             onPressed: () {
               showDialog(
                   context: context,
@@ -130,7 +247,11 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                                     labelText: 'Görev Açıklaması'),
                               ),
+                              SizedBox(height: context.dynamicHeight(0.03)),
                               ElevatedButton(
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        ColorConstants.orangeColor)),
                                 onPressed: () async {
                                   Map<String, dynamic> taskData = {
                                     'taskName': taskName.text,
@@ -144,7 +265,7 @@ class _HomeViewState extends State<HomeView> {
                                 },
                                 child: const StyledText(
                                   text: 'Kaydet',
-                                  color: ColorConstants.white,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               )
@@ -155,11 +276,10 @@ class _HomeViewState extends State<HomeView> {
                     );
                   });
             },
-            child: const Icon(
-              EvaIcons.plus,
-              color: ColorConstants.white,
-            ),
           ),
+
+          //----------------------------- BOTTOM APP BAR ----------------------------//
+
           bottomNavigationBar: bottomAppBar(),
         ));
   }
@@ -167,17 +287,20 @@ class _HomeViewState extends State<HomeView> {
   BottomAppBar bottomAppBar() {
     return const BottomAppBar(
       child: TabBar(
+        indicatorColor: ColorConstants.mainColor,
         tabs: [
           Tab(
             child: StyledText(
               text: 'Görevler',
-              color: ColorConstants.titleColor,
+              color: ColorConstants.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
           Tab(
             child: StyledText(
               text: 'Yapılanlar',
-              color: ColorConstants.titleColor,
+              color: ColorConstants.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],

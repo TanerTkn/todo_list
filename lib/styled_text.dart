@@ -26,7 +26,7 @@ class StyledText extends StatelessWidget {
     return Text(
       text,
       style: GoogleFonts.getFont(
-        fontFamily ?? "Nunito",
+        fontFamily ?? "Rubik",
         color: color,
         fontSize: fontSize,
         fontWeight: fontWeight,
