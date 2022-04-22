@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "748720294801",
-    "project_id": "fir-todo-app-7be50",
-    "storage_bucket": "fir-todo-app-7be50.appspot.com"
+    "project_number": "278318668369",
+    "project_id": "todoapp-ebb2e",
+    "storage_bucket": "todoapp-ebb2e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:748720294801:android:d485e73235c08c51e32830",
+        "mobilesdk_app_id": "1:278318668369:android:0db90bc499ef9eec783670",
         "android_client_info": {
           "package_name": "com.example.todo_list"
         }
       },
       "oauth_client": [
         {
-          "client_id": "748720294801-2h7g9bj00htq33lg6l27vfc3obh441i0.apps.googleusercontent.com",
+          "client_id": "278318668369-chvqsaupaetqjoptgs7q6t975jqn0qko.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.todo_list",
+            "certificate_hash": "1274359640f90eaa4d4528a1512fd136d8ecfdf1"
+          }
+        },
+        {
+          "client_id": "278318668369-if2l0jd02jrqp93frf0dpvdk9qvc3lbb.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBYoYWA7xlhA1pCQp9Rh25ToN0QAFqcO94"
+          "current_key": "AIzaSyDeQMQV0dIw5IHuUEszXFE2MSl2STMLqCk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "748720294801-2h7g9bj00htq33lg6l27vfc3obh441i0.apps.googleusercontent.com",
+              "client_id": "278318668369-if2l0jd02jrqp93frf0dpvdk9qvc3lbb.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
