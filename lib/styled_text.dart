@@ -21,12 +21,30 @@ class StyledText extends StatelessWidget {
       this.textOverFlow})
       : super(key: key);
 
+  static titleFontText({
+    required String text,
+    Color? color,
+    double? fontsize,
+    FontWeight? fontWeight,
+    String? fontFamily,
+  }) {
+    return Text(
+      text,
+      style: GoogleFonts.getFont(
+        fontFamily ?? "Baloo 2",
+        color: color,
+        fontSize: fontsize,
+        fontWeight: fontWeight,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
       style: GoogleFonts.getFont(
-        fontFamily ?? "Rubik",
+        fontFamily ?? "Lato",
         color: color,
         fontSize: fontSize,
         fontWeight: fontWeight,

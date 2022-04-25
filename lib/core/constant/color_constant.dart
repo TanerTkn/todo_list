@@ -5,13 +5,11 @@ class ColorConstants {
 
   ColorConstants._init();
 
-  static const mainColor = Color(0xFF7E6BE8);
-  static const secondaryColor = Color(0xFF285DC2);
-  static const greenColor = Color(0xFF73d197);
-  static const redColor = Color(0xFFe7647f);
-  static const yellowColor = Color(0xFFf9cf67);
-  static const orangeColor = Color(0xFFf39970);
-  static const background = Color(0xFFF5F5F5);
-  static const black = Color(0xFF000000);
-  static const grey = Color(0xFFA1A3A6);
+  static const background = Color(0xFFE1E8F4);
+  static const textColor = Color(0xFF181743);
+  static const lightBlue = Color(0xFF00FFFF);
+  static const pink = Color(0xFFFE1E9A);
+  static const blue = Color(0xFF254DDE);
+  static const orange = Color(0xFFFEA64C);
+  static const arrowBackColor = Color(0xFFDFDFDF);
 }
