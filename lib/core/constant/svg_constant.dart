@@ -13,6 +13,10 @@ class SvgConstant {
       '$basePath/deepBlueCircularIcon'.toSvg;
   static final String lightBlueCircularIcon =
       '$basePath/lightBlueCircularIcon'.toSvg;
+  static final String listBottomIcon = '$basePath/listBottomIcon'.toSvg;
+  static final String multiCheckIcon = '$basePath/multiCheck'.toSvg;
+  static final String multiplayCircularIcon =
+      '$basePath/multiplayCircularIcon'.toSvg;
 
   static final String calendar = '$basePath/calendar'.toSvg;
   static final String check = '$basePath/check'.toSvg;
@@ -23,6 +27,9 @@ class SvgConstant {
   static final String pinkCircularButton = '$basePath/pinkCircularButton'.toSvg;
   static final String whiteCircularButton =
       '$basePath/whiteCircularButton'.toSvg;
+  static final String addRectangleButton = '$basePath/addButton'.toSvg;
+  static final String blackCircularButton =
+      '$basePath/blackCircularButton'.toSvg;
 
   static final String weight = '$basePath/weight'.toSvg;
   static final String coding = '$basePath/coding'.toSvg;
