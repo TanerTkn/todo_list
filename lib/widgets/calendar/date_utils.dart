@@ -20,28 +20,28 @@ class DateUtils {
   static String apiDayFormat(DateTime d) => _apiDayFormat.format(d);
 
   static const List<String> weekdays = [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun'
+    'PZT',
+    'SAL',
+    'CAR',
+    'PER',
+    'CUM',
+    'CMT',
+    'PZR'
   ];
 
   static const List months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    'Ocak',
+    'Şubat',
+    'Mart',
+    'Nisan',
+    'Mayıs',
+    'Haziran',
+    'Temmuz',
+    'Ağustos',
+    'Eylül',
+    'Ekim',
+    'Kasım',
+    'Aralık'
   ];
 
   /// The list of days in a given month

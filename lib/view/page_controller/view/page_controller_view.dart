@@ -10,8 +10,9 @@ import 'package:todo_list/core/constant/color_constant.dart';
 import 'package:todo_list/core/constant/svg_constant.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:todo_list/view/calendar/view/calendar_view.dart';
+import 'package:todo_list/view/done/view/done_view.dart';
 import 'package:todo_list/view/home/view/home_view.dart';
-import 'package:todo_list/view/linear_gradient_color.dart';
+import 'package:todo_list/widgets/linear_gradient_color.dart';
 import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/page_controller/controller/page_controller.dart';
 import 'package:todo_list/widgets/page_controller/custom_bottom_bar.dart';
@@ -32,7 +33,7 @@ class _PageControllerViewState extends State<PageControllerView> {
   @override
   Widget build(BuildContext context) {
     CollectionReference tasks = firestore.collection('tasks');
-    int currentIndex = 1;
+    int currentIndex = 0;
     final pages = [
       const HomeView(),
       const CalendarView(),
@@ -250,6 +251,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                             controller.taskName.clear();
                             controller.taskDescription.clear();
                           });
+                          Navigator.pop(context);
                         },
                         child: Stack(
                           alignment: Alignment.center,
@@ -258,7 +260,9 @@ class _PageControllerViewState extends State<PageControllerView> {
                               SvgConstant.addRectangleButton,
                             ),
                             const TitleTextFormField(
-                                text: 'EKLE', fontSize: 18),
+                                color: Colors.white,
+                                text: 'EKLE',
+                                fontSize: 18),
                           ],
                         ),
                       )
@@ -343,11 +347,16 @@ class _PageControllerViewState extends State<PageControllerView> {
       actions: [
         Padding(
           padding: context.paddingNormal,
-          child: LinearGradientMask(
-            color1: ColorConstants.pink,
-            color2: ColorConstants.orange,
-            child: SvgPicture.asset(
-              SvgConstant.appBarIcon,
+          child: InkWell(
+            onTap: () {
+              Get.to(const DoneView());
+            },
+            child: LinearGradientMask(
+              color1: ColorConstants.pink,
+              color2: ColorConstants.orange,
+              child: SvgPicture.asset(
+                SvgConstant.appBarIcon,
+              ),
             ),
           ),
         )

@@ -5,11 +5,13 @@ import 'package:todo_list/core/constant/color_constant.dart';
 class TitleTextFormField extends StatelessWidget {
   final String text;
   final double fontSize;
+  final Color? color;
   final String? fontFamily;
 
   const TitleTextFormField({
     Key? key,
     required this.text,
+    this.color,
     required this.fontSize,
     this.fontFamily,
   }) : super(key: key);
@@ -20,7 +22,7 @@ class TitleTextFormField extends StatelessWidget {
       text,
       style: GoogleFonts.getFont(
         fontFamily ?? "Baloo 2",
-        color: ColorConstants.textColor,
+        color: color ?? ColorConstants.textColor,
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
       ),

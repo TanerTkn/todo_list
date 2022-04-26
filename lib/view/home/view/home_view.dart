@@ -47,30 +47,86 @@ class _HomeViewState extends State<HomeView> {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: context.paddingLow,
-                          child: Card(
-                            color: Colors.white,
-                            child: ListTile(
-                                title: StyledText(
-                                    text: '${listSnap[index]['taskName']}',
-                                    color: ColorConstants.textColor),
-                                leading: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      controller.iconBackground[Random()
-                                          .nextInt(controller
-                                              .iconBackground.length)],
-                                      height: context.dynamicHeight(0.05),
-                                    ),
-                                    SvgPicture.asset(
-                                      controller.icons[Random()
-                                          .nextInt(controller.icons.length)],
-                                      height: context.dynamicHeight(0.03),
+                          child: Dismissible(
+                            background: Card(
+                              color: Colors.green,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: context.dynamicWidth(0.05)),
+                                    child: StyledText.titleFontText(
+                                      text: 'TAMAMLANDI',
                                       color: Colors.white,
-                                    ),
-                                  ],
-                                ),
-                                trailing: const HomeDataField()),
+                                      fontWeight: FontWeight.bold,
+                                      fontsize: 25,
+                                    )),
+                              ),
+                            ),
+                            secondaryBackground: Card(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                    padding: EdgeInsets.only(
+                                        right: context.dynamicWidth(0.05)),
+                                    child: StyledText.titleFontText(
+                                      text: 'KALDIR',
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontsize: 25,
+                                    )),
+                              ),
+                              color: Colors.red,
+                            ),
+                            key: UniqueKey(),
+                            onDismissed: (direction) {
+                              if (direction == DismissDirection.startToEnd) {
+                                Get.snackbar(
+                                    'Görevi Başarıyla Tamamlandılara Ekledin',
+                                    '${listSnap[index]['taskName']} Görev tamamlandı.',
+                                    colorText: Colors.white,
+                                    backgroundColor: Colors.green,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    icon: const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                    ));
+                              } else {
+                                listSnap[index].reference.delete();
+                                Get.snackbar('Görev Başarıyla Kaldırıldı',
+                                    '${listSnap[index]['taskName']} Görevi kaldırdın.',
+                                    colorText: Colors.white,
+                                    backgroundColor: Colors.red,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.white));
+                              }
+                            },
+                            child: Card(
+                              color: Colors.white,
+                              child: ListTile(
+                                  title: StyledText(
+                                      text: '${listSnap[index]['taskName']}',
+                                      color: ColorConstants.textColor),
+                                  leading: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        controller.iconBackground[Random()
+                                            .nextInt(controller
+                                                .iconBackground.length)],
+                                        height: context.dynamicHeight(0.05),
+                                      ),
+                                      SvgPicture.asset(
+                                        controller.icons[Random()
+                                            .nextInt(controller.icons.length)],
+                                        height: context.dynamicHeight(0.03),
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: const HomeDataField()),
+                            ),
                           ),
                         );
                       },
