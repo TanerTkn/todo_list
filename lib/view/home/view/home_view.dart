@@ -9,6 +9,7 @@ import 'package:todo_list/styled_text.dart';
 import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/home/controller/home_controller.dart';
 import 'package:todo_list/widgets/dismissable_delete_task.dart';
+import 'package:todo_list/widgets/home/dialog_back_button.dart';
 import 'package:todo_list/widgets/home/home_date_field.dart';
 
 class HomeView extends StatefulWidget {
@@ -99,6 +100,10 @@ class _HomeViewState extends State<HomeView> {
                             child: Card(
                               color: Colors.white,
                               child: ListTile(
+                                  onTap: () {
+                                    _showTaskDetailDialog(
+                                        context, index, listSnap);
+                                  },
                                   title: StyledText(
                                       text: '${listSnap[index]['taskName']}',
                                       color: ColorConstants.textColor),
@@ -135,5 +140,121 @@ class _HomeViewState extends State<HomeView> {
         },
       ),
     );
+  }
+
+  Future<dynamic> _showTaskDetailDialog(BuildContext context, int index,
+      List<DocumentSnapshot<Object?>> listSnap) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: Material(
+              type: MaterialType.transparency,
+              child: Padding(
+                padding: context.paddingMedium,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: context.paddingLow,
+                  width: double.infinity,
+                  height: context.dynamicHeight(0.50),
+                  child: Column(
+                    children: [
+                      _sizedBox03(context),
+                      _taskIcon(index, context),
+                      _sizedBox03(context),
+                      _taskName(listSnap, index),
+                      _sizedBox03(context),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _taskDate(),
+                          _sizedBox03(context),
+                          _taskTime(),
+                        ],
+                      ),
+                      _sizedBox05(context),
+                      _taskSubtitle(),
+                      _sizedBox03(context),
+                      _taskDescription(listSnap, index),
+                      const Spacer(),
+                      const DialogBackButton(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Stack _taskIcon(int index, BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SvgPicture.asset(
+          controller.iconBackground[index],
+          height: context.dynamicHeight(0.05),
+        ),
+        SvgPicture.asset(
+          controller.icons[index],
+          height: context.dynamicHeight(0.03),
+          color: Colors.white,
+        ),
+      ],
+    );
+  }
+
+  StyledText _taskName(List<DocumentSnapshot<Object?>> listSnap, int index) {
+    return StyledText(
+        text: '${listSnap[index]['taskName']}',
+        color: ColorConstants.textColor,
+        fontSize: 20,
+        fontWeight: FontWeight.bold);
+  }
+
+  StyledText _taskDate() {
+    return const StyledText(
+      text: '18 Nis',
+      color: ColorConstants.textColor,
+      fontSize: 17,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+  StyledText _taskTime() {
+    return const StyledText(
+      text: '10:26',
+      color: ColorConstants.textColor,
+      fontSize: 17,
+    );
+  }
+
+  StyledText _taskSubtitle() {
+    return const StyledText(
+      text: 'Açıklama',
+      color: ColorConstants.textColor,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+  StyledText _taskDescription(
+      List<DocumentSnapshot<Object?>> listSnap, int index) {
+    return StyledText(
+      text: '${listSnap[index]['taskDescription']}',
+      color: ColorConstants.textColor,
+    );
+  }
+
+  SizedBox _sizedBox05(BuildContext context) {
+    return SizedBox(height: context.dynamicHeight(0.05));
+  }
+
+  SizedBox _sizedBox03(BuildContext context) {
+    return SizedBox(height: context.dynamicHeight(0.03));
   }
 }

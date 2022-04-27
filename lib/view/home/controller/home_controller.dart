@@ -8,8 +8,18 @@ class HomeController extends GetxController {
     SvgConstant.deepBlueCircularIcon,
     SvgConstant.lightBlueCircularIcon,
     SvgConstant.pinkblueCircularIcon,
+    SvgConstant.orangeCircularIcon,
+    SvgConstant.deepBlueCircularIcon,
+    SvgConstant.lightBlueCircularIcon,
+    SvgConstant.pinkblueCircularIcon,
   ];
   List icons = [
+    SvgConstant.weight,
+    SvgConstant.coding,
+    SvgConstant.console,
+    SvgConstant.weight,
+    SvgConstant.coding,
+    SvgConstant.console,
     SvgConstant.weight,
     SvgConstant.coding,
     SvgConstant.console,

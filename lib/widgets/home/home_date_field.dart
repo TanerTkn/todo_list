@@ -16,7 +16,7 @@ class HomeDataField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         const StyledText(
-          text: '18 June',
+          text: '18 Nis',
           color: ColorConstants.textColor,
           fontWeight: FontWeight.bold,
         ),
