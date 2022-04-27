@@ -8,6 +8,7 @@ import 'package:todo_list/core/constant/color_constant.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/home/controller/home_controller.dart';
+import 'package:todo_list/widgets/dismissable_delete_task.dart';
 import 'package:todo_list/widgets/home/home_date_field.dart';
 
 class HomeView extends StatefulWidget {
@@ -48,8 +49,15 @@ class _HomeViewState extends State<HomeView> {
                         return Padding(
                           padding: context.paddingLow,
                           child: Dismissible(
-                            background: Card(
-                              color: Colors.green,
+                            background: Container(
+                              margin: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  gradient: LinearGradient(colors: [
+                                    ColorConstants.orange,
+                                    ColorConstants.pink
+                                  ])),
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
@@ -63,21 +71,7 @@ class _HomeViewState extends State<HomeView> {
                                     )),
                               ),
                             ),
-                            secondaryBackground: Card(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Padding(
-                                    padding: EdgeInsets.only(
-                                        right: context.dynamicWidth(0.05)),
-                                    child: StyledText.titleFontText(
-                                      text: 'KALDIR',
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontsize: 25,
-                                    )),
-                              ),
-                              color: Colors.red,
-                            ),
+                            secondaryBackground: const DismissibleDeleteTask(),
                             key: UniqueKey(),
                             onDismissed: (direction) {
                               if (direction == DismissDirection.startToEnd) {

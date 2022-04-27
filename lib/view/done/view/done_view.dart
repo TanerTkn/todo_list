@@ -9,6 +9,7 @@ import 'package:todo_list/core/constant/color_constant.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/home/controller/home_controller.dart';
+import 'package:todo_list/widgets/dismissable_delete_task.dart';
 import 'package:todo_list/widgets/home/home_date_field.dart';
 
 class DoneView extends StatefulWidget {
@@ -28,25 +29,7 @@ class _DoneViewState extends State<DoneView> {
     CollectionReference tasks = firestore.collection('tasks');
     return Scaffold(
       backgroundColor: ColorConstants.background,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: ColorConstants.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            EvaIcons.arrowIosBackOutline,
-            color: ColorConstants.textColor,
-            size: 30,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: StyledText.titleFontText(
-            text: 'Tamamlanan Görevler',
-            color: ColorConstants.textColor,
-            fontWeight: FontWeight.bold),
-      ),
+      appBar: _buildAppBar(context),
       body: StreamBuilder<QuerySnapshot>(
         stream: tasks.snapshots(),
         builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
@@ -71,21 +54,8 @@ class _DoneViewState extends State<DoneView> {
                             padding: context.paddingLow,
                             child: Dismissible(
                               background: Container(),
-                              secondaryBackground: Card(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Padding(
-                                      padding: EdgeInsets.only(
-                                          right: context.dynamicWidth(0.05)),
-                                      child: StyledText.titleFontText(
-                                        text: 'KALDIR',
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontsize: 25,
-                                      )),
-                                ),
-                                color: Colors.red,
-                              ),
+                              secondaryBackground:
+                                  const DismissibleDeleteTask(),
                               key: UniqueKey(),
                               onDismissed: (direction) {
                                 listSnap[index].reference.delete();
@@ -150,6 +120,28 @@ class _DoneViewState extends State<DoneView> {
           }
         },
       ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      centerTitle: true,
+      backgroundColor: ColorConstants.background,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(
+          EvaIcons.arrowIosBackOutline,
+          color: ColorConstants.textColor,
+          size: 30,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: StyledText.titleFontText(
+          text: 'Tamamlanan Görevler',
+          color: ColorConstants.textColor,
+          fontWeight: FontWeight.bold),
     );
   }
 }
