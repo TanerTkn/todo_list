@@ -6,17 +6,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:random_string/random_string.dart';
 import 'package:todo_list/core/constant/color_constant.dart';
 import 'package:todo_list/core/constant/svg_constant.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:todo_list/view/calendar/view/calendar_view.dart';
-import 'package:todo_list/view/done/view/done_view.dart';
+import 'package:todo_list/view/completed/view/completed_view.dart';
 import 'package:todo_list/view/home/view/home_view.dart';
-import 'package:todo_list/widgets/linear_gradient_color.dart';
 import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/page_controller/controller/page_controller.dart';
 import 'package:todo_list/widgets/page_controller/custom_bottom_bar.dart';
 import 'package:todo_list/widgets/page_controller/title_text.dart';
+import 'dart:math' show Random;
 
 class PageControllerView extends StatefulWidget {
   const PageControllerView({Key? key}) : super(key: key);
@@ -29,22 +30,21 @@ class _PageControllerViewState extends State<PageControllerView> {
   PageViewController controller = Get.put(PageViewController());
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  int currentIndex = 0;
+  final pages = [
+    const HomeView(),
+    const CalendarView(),
+  ];
+  final pageNames = ['Yapılacaklar', 'Takvim'];
 
   @override
   Widget build(BuildContext context) {
     CollectionReference tasks = firestore.collection('tasks');
-    int currentIndex = 0;
-    final pages = [
-      const HomeView(),
-      const CalendarView(),
-    ];
-    final pageNames = ['Yapılacaklar', 'Takvim'];
+
     return Scaffold(
       backgroundColor: ColorConstants.background,
       extendBody: true,
-      appBar: currentIndex == 0
-          ? _buildAppBar(pageNames, currentIndex, context)
-          : null,
+      appBar: _buildAppBar(pageNames, currentIndex, context),
       body: Stack(
         children: [
           pages[currentIndex],
@@ -67,7 +67,9 @@ class _PageControllerViewState extends State<PageControllerView> {
                         buttonHeight: context.dynamicHeight(0.10),
                         svgButton: SvgConstant.pinkCircularButton,
                         iconHeight: context.dynamicHeight(0.02),
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(const CompletedView());
+                        },
                       ),
                       CustomBottomBar(
                         svgIcon: currentIndex == 0
@@ -77,7 +79,15 @@ class _PageControllerViewState extends State<PageControllerView> {
                         svgButton: SvgConstant.whiteCircularButton,
                         iconHeight: context.dynamicHeight(0.045),
                         onTap: () {
-                          Get.to(const CalendarView());
+                          if (currentIndex == 0) {
+                            setState(() {
+                              currentIndex = 1;
+                            });
+                          } else {
+                            setState(() {
+                              currentIndex = 0;
+                            });
+                          }
                         },
                       ),
                       CustomBottomBar(
@@ -168,7 +178,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold),
                               readOnly: true,
-                              controller: controller.dateController,
+                              controller: controller.taskDate,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(
                                   Icons.date_range,
@@ -186,7 +196,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                                 await _showDatePicker(context)
                                     .then((selectedDate) {
                                   if (selectedDate != null) {
-                                    controller.dateController.text =
+                                    controller.taskDate.text =
                                         DateFormat('dd-MM-yyyy')
                                             .format(selectedDate);
                                   }
@@ -205,51 +215,59 @@ class _PageControllerViewState extends State<PageControllerView> {
                       SizedBox(height: context.dynamicHeight(0.01)),
                       const TitleTextFormField(text: 'Saat', fontSize: 16),
                       SizedBox(height: context.dynamicHeight(0.01)),
-                      TextFormField(
-                        style: GoogleFonts.getFont("Lato",
-                            color: ColorConstants.textColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                        readOnly: true,
-                        controller: controller.dateController,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.access_time_sharp,
-                            color: ColorConstants.textColor,
+                      Obx(
+                        () => TextFormField(
+                          style: GoogleFonts.getFont("Lato",
+                              color: ColorConstants.textColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                          readOnly: true,
+                          controller: controller.taskTime.value,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.access_time_sharp,
+                              color: ColorConstants.textColor,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 42, vertical: 20),
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 42, vertical: 20),
+                          onTap: () async {
+                            final TimeOfDay? timeOfDay = await showTimePicker(
+                              context: context,
+                              initialTime: controller.selectedTime,
+                              initialEntryMode: TimePickerEntryMode.dial,
+                            );
+                            if (timeOfDay != controller.selectedTime) {
+                              setState(() {
+                                controller.selectedTime = timeOfDay!;
+                                controller.taskTime.value =
+                                    TextEditingController(
+                                        text: timeOfDay.format(context));
+                              });
+                            }
+                          },
                         ),
-                        onTap: () async {
-                          final TimeOfDay? timeOfDay = await showTimePicker(
-                            context: context,
-                            initialTime: controller.selectedTime,
-                            initialEntryMode: TimePickerEntryMode.dial,
-                          );
-                          if (timeOfDay != controller.selectedTime) {
-                            setState(() {
-                              controller.selectedTime = timeOfDay!;
-                            });
-                          }
-                        },
                       ),
                       SizedBox(height: context.dynamicHeight(0.03)),
                       InkWell(
                         onTap: () async {
                           Map<String, dynamic> taskData = {
                             'taskName': controller.taskName.text,
-                            'taskDescription': controller.taskDescription.text
+                            'taskDescription': controller.taskDescription.text,
+                            'taskDate': controller.taskDate.text,
+                            'taskTime': controller.taskTime.value.text,
+                            'taskCompleted': controller.taskCompleted.value,
                           };
-                          await tasks
-                              .doc(controller.taskName.text)
-                              .set(taskData);
+                          await tasks.doc(randomString(10)).set(taskData);
                           setState(() {
                             controller.taskName.clear();
                             controller.taskDescription.clear();
+                            controller.taskDate.clear();
+                            controller.taskTime.value.clear();
                           });
                           Navigator.pop(context);
                         },
@@ -344,23 +362,6 @@ class _PageControllerViewState extends State<PageControllerView> {
         color: ColorConstants.textColor,
         fontWeight: FontWeight.bold,
       ),
-      actions: [
-        Padding(
-          padding: context.paddingNormal,
-          child: InkWell(
-            onTap: () {
-              Get.to(const DoneView());
-            },
-            child: LinearGradientMask(
-              color1: ColorConstants.pink,
-              color2: ColorConstants.orange,
-              child: SvgPicture.asset(
-                SvgConstant.appBarIcon,
-              ),
-            ),
-          ),
-        )
-      ],
     );
   }
 }

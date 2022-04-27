@@ -10,7 +10,6 @@ import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/home/controller/home_controller.dart';
 import 'package:todo_list/widgets/dismissable_delete_task.dart';
 import 'package:todo_list/widgets/home/dialog_back_button.dart';
-import 'package:todo_list/widgets/home/home_date_field.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -124,7 +123,24 @@ class _HomeViewState extends State<HomeView> {
                                       ),
                                     ],
                                   ),
-                                  trailing: const HomeDataField()),
+                                  trailing: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      StyledText(
+                                        text: '${listSnap[index]['taskDate']}',
+                                        color: ColorConstants.textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      SizedBox(
+                                          height: context.dynamicHeight(0.01)),
+                                      StyledText(
+                                        text: '${listSnap[index]['taskTime']}',
+                                        color: ColorConstants.textColor,
+                                      ),
+                                    ],
+                                  )),
                             ),
                           ),
                         );
@@ -171,9 +187,9 @@ class _HomeViewState extends State<HomeView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          _taskDate(),
-                          _sizedBox03(context),
-                          _taskTime(),
+                          _taskDate(listSnap, index),
+                          _sizedBoxWidth03(context),
+                          _taskTime(listSnap, index),
                         ],
                       ),
                       _sizedBox05(context),
@@ -216,18 +232,18 @@ class _HomeViewState extends State<HomeView> {
         fontWeight: FontWeight.bold);
   }
 
-  StyledText _taskDate() {
-    return const StyledText(
-      text: '18 Nis',
+  StyledText _taskDate(List<DocumentSnapshot<Object?>> listSnap, int index) {
+    return StyledText(
+      text: '${listSnap[index]['taskDate']}',
       color: ColorConstants.textColor,
       fontSize: 17,
       fontWeight: FontWeight.bold,
     );
   }
 
-  StyledText _taskTime() {
-    return const StyledText(
-      text: '10:26',
+  StyledText _taskTime(List<DocumentSnapshot<Object?>> listSnap, int index) {
+    return StyledText(
+      text: '${listSnap[index]['taskTime']}',
       color: ColorConstants.textColor,
       fontSize: 17,
     );
@@ -256,5 +272,9 @@ class _HomeViewState extends State<HomeView> {
 
   SizedBox _sizedBox03(BuildContext context) {
     return SizedBox(height: context.dynamicHeight(0.03));
+  }
+
+  SizedBox _sizedBoxWidth03(BuildContext context) {
+    return SizedBox(width: context.dynamicWidth(0.03));
   }
 }

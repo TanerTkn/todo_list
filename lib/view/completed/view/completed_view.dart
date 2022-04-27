@@ -12,14 +12,14 @@ import 'package:todo_list/view/home/controller/home_controller.dart';
 import 'package:todo_list/widgets/dismissable_delete_task.dart';
 import 'package:todo_list/widgets/home/home_date_field.dart';
 
-class DoneView extends StatefulWidget {
-  const DoneView({Key? key}) : super(key: key);
+class CompletedView extends StatefulWidget {
+  const CompletedView({Key? key}) : super(key: key);
 
   @override
-  State<DoneView> createState() => _DoneViewState();
+  State<CompletedView> createState() => _CompletedViewState();
 }
 
-class _DoneViewState extends State<DoneView> {
+class _CompletedViewState extends State<CompletedView> {
   HomeController controller = Get.put(HomeController());
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;

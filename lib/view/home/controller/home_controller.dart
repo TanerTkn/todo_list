@@ -27,4 +27,6 @@ class HomeController extends GetxController {
   final formKey = GlobalKey<FormState>();
   TextEditingController taskName = TextEditingController();
   TextEditingController taskDescription = TextEditingController();
+  TextEditingController taskDate = TextEditingController();
+  TextEditingController taskTime = TextEditingController();
 }

@@ -205,43 +205,48 @@ class _CalendarViewState extends State<CalendarView> {
                         shrinkWrap: true,
                         itemCount: listSnap.length,
                         itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              const StyledText(
-                                  text: '9:20',
-                                  color: ColorConstants.textColor,
-                                  fontWeight: FontWeight.bold),
-                              SizedBox(width: context.dynamicWidth(0.02)),
-                              Flexible(
-                                child: Card(
-                                  color: Colors.white,
-                                  child: ListTile(
-                                    title: StyledText(
-                                        text: '${listSnap[index]['taskName']}',
-                                        color: ColorConstants.textColor),
-                                    leading: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          calendarController.iconBackground[
-                                              Random().nextInt(
-                                                  calendarController
-                                                      .iconBackground.length)],
-                                          height: context.dynamicHeight(0.05),
-                                        ),
-                                        SvgPicture.asset(
-                                          calendarController.icons[Random()
-                                              .nextInt(calendarController
-                                                  .icons.length)],
-                                          height: context.dynamicHeight(0.03),
-                                          color: Colors.white,
-                                        ),
-                                      ],
+                          return Padding(
+                            padding: context.paddingLow,
+                            child: Row(
+                              children: [
+                                StyledText(
+                                    text: '${listSnap[index]['taskTime']}',
+                                    color: ColorConstants.textColor,
+                                    fontWeight: FontWeight.bold),
+                                SizedBox(width: context.dynamicWidth(0.02)),
+                                Flexible(
+                                  child: Card(
+                                    color: Colors.white,
+                                    child: ListTile(
+                                      title: StyledText(
+                                          text:
+                                              '${listSnap[index]['taskName']}',
+                                          color: ColorConstants.textColor),
+                                      leading: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            calendarController.iconBackground[
+                                                Random().nextInt(
+                                                    calendarController
+                                                        .iconBackground
+                                                        .length)],
+                                            height: context.dynamicHeight(0.05),
+                                          ),
+                                          SvgPicture.asset(
+                                            calendarController.icons[Random()
+                                                .nextInt(calendarController
+                                                    .icons.length)],
+                                            height: context.dynamicHeight(0.03),
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         },
                       ),
