@@ -148,7 +148,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                           children: [
                             TextField(
                               style: controller.textStyle,
-                              controller: controller.taskName,
+                              controller: controller.name,
                               decoration: InputDecoration(
                                   labelStyle: controller.titleStyle,
                                   border: const UnderlineInputBorder(),
@@ -161,7 +161,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                             TextField(
                               style: controller.textStyle,
                               maxLines: 5,
-                              controller: controller.taskDescription,
+                              controller: controller.description,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -178,7 +178,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold),
                               readOnly: true,
-                              controller: controller.taskDate,
+                              controller: controller.date,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(
                                   Icons.date_range,
@@ -196,7 +196,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                                 await _showDatePicker(context)
                                     .then((selectedDate) {
                                   if (selectedDate != null) {
-                                    controller.taskDate.text =
+                                    controller.date.text =
                                         DateFormat('dd-MM-yyyy')
                                             .format(selectedDate);
                                   }
@@ -222,7 +222,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                           readOnly: true,
-                          controller: controller.taskTime.value,
+                          controller: controller.time.value,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(
                               Icons.access_time_sharp,
@@ -244,9 +244,8 @@ class _PageControllerViewState extends State<PageControllerView> {
                             if (timeOfDay != controller.selectedTime) {
                               setState(() {
                                 controller.selectedTime = timeOfDay!;
-                                controller.taskTime.value =
-                                    TextEditingController(
-                                        text: timeOfDay.format(context));
+                                controller.time.value = TextEditingController(
+                                    text: timeOfDay.format(context));
                               });
                             }
                           },
@@ -256,18 +255,18 @@ class _PageControllerViewState extends State<PageControllerView> {
                       InkWell(
                         onTap: () async {
                           Map<String, dynamic> taskData = {
-                            'taskName': controller.taskName.text,
-                            'taskDescription': controller.taskDescription.text,
-                            'taskDate': controller.taskDate.text,
-                            'taskTime': controller.taskTime.value.text,
-                            'taskCompleted': controller.taskCompleted.value,
+                            'name': controller.name.text,
+                            'description': controller.description.text,
+                            'date': controller.date.text,
+                            'time': controller.time.value.text,
+                            'completed': controller.completed.value,
                           };
                           await tasks.doc(randomString(10)).set(taskData);
                           setState(() {
-                            controller.taskName.clear();
-                            controller.taskDescription.clear();
-                            controller.taskDate.clear();
-                            controller.taskTime.value.clear();
+                            controller.name.clear();
+                            controller.description.clear();
+                            controller.date.clear();
+                            controller.time.value.clear();
                           });
                           Navigator.pop(context);
                         },

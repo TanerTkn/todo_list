@@ -32,13 +32,13 @@ class PageViewController extends GetxController {
   ];
 
   final formKey = GlobalKey<FormState>();
-  TextEditingController taskName = TextEditingController();
-  TextEditingController taskDescription = TextEditingController();
-  TextEditingController taskDate = TextEditingController();
+  TextEditingController name = TextEditingController();
+  TextEditingController description = TextEditingController();
+  TextEditingController date = TextEditingController();
   TimeOfDay selectedTime = TimeOfDay.now();
-  final taskTime = TextEditingController().obs;
+  final time = TextEditingController().obs;
 
-  RxBool taskCompleted = false.obs;
+  RxBool completed = false.obs;
 
   final pages = [
     const HomeView(),

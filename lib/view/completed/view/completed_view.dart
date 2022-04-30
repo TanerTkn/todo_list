@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:todo_list/core/constant/color_constant.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:kartal/kartal.dart';
-import 'package:todo_list/view/home/controller/home_controller.dart';
+import 'package:todo_list/view/completed/controller/completed_controller.dart';
 import 'package:todo_list/widgets/dismissable_delete_task.dart';
 import 'package:todo_list/widgets/home/home_date_field.dart';
 
@@ -20,25 +20,24 @@ class CompletedView extends StatefulWidget {
 }
 
 class _CompletedViewState extends State<CompletedView> {
-  HomeController controller = Get.put(HomeController());
+  CompletedController controller = Get.put(CompletedController());
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference tasks = firestore.collection('tasks');
     return Scaffold(
       backgroundColor: ColorConstants.background,
       appBar: _buildAppBar(context),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: tasks.snapshots(),
+      body: StreamBuilder(
+        stream: controller.completedTasks(),
         builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
           if (asyncSnapshot.hasError) {
             return const Center(
                 child: StyledText(text: 'Bir hata oluştu. Tekrar deneyiniz.'));
           } else {
             if (asyncSnapshot.hasData) {
-              List<DocumentSnapshot> listSnap = asyncSnapshot.data.docs;
+              List<DocumentSnapshot> completedTasks = asyncSnapshot.data.docs;
               return Padding(
                 padding: context.paddingMedium,
                 child: Column(
@@ -48,7 +47,7 @@ class _CompletedViewState extends State<CompletedView> {
                     Flexible(
                       child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: listSnap.length,
+                        itemCount: completedTasks.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: context.paddingLow,
@@ -58,9 +57,9 @@ class _CompletedViewState extends State<CompletedView> {
                                   const DismissibleDeleteTask(),
                               key: UniqueKey(),
                               onDismissed: (direction) {
-                                listSnap[index].reference.delete();
+                                completedTasks[index].reference.delete();
                                 Get.snackbar('Görev Başarıyla Kaldırıldı',
-                                    '${listSnap[index]['taskName']} Görevi kaldırdın.',
+                                    '${completedTasks[index]['name']} Görevi kaldırdın.',
                                     colorText: Colors.white,
                                     backgroundColor: Colors.red,
                                     snackPosition: SnackPosition.BOTTOM,
@@ -78,7 +77,7 @@ class _CompletedViewState extends State<CompletedView> {
                                       child: ListTile(
                                           title: StyledText(
                                               text:
-                                                  '${listSnap[index]['taskName']}',
+                                                  '${completedTasks[index]['name']}',
                                               color: ColorConstants.textColor),
                                           leading: Stack(
                                             alignment: Alignment.center,

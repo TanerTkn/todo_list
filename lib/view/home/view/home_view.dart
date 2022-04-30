@@ -77,7 +77,7 @@ class _HomeViewState extends State<HomeView> {
                               if (direction == DismissDirection.startToEnd) {
                                 Get.snackbar(
                                     'Görevi Başarıyla Tamamlandılara Ekledin',
-                                    '${listSnap[index]['taskName']} Görev tamamlandı.',
+                                    '${listSnap[index]['name']} Görev tamamlandı.',
                                     colorText: Colors.white,
                                     backgroundColor: Colors.green,
                                     snackPosition: SnackPosition.BOTTOM,
@@ -88,7 +88,7 @@ class _HomeViewState extends State<HomeView> {
                               } else {
                                 listSnap[index].reference.delete();
                                 Get.snackbar('Görev Başarıyla Kaldırıldı',
-                                    '${listSnap[index]['taskName']} Görevi kaldırdın.',
+                                    '${listSnap[index]['name']} Görevi kaldırdın.',
                                     colorText: Colors.white,
                                     backgroundColor: Colors.red,
                                     snackPosition: SnackPosition.BOTTOM,
@@ -104,7 +104,7 @@ class _HomeViewState extends State<HomeView> {
                                         context, index, listSnap);
                                   },
                                   title: StyledText(
-                                      text: '${listSnap[index]['taskName']}',
+                                      text: '${listSnap[index]['name']}',
                                       color: ColorConstants.textColor),
                                   leading: Stack(
                                     alignment: Alignment.center,
@@ -129,14 +129,14 @@ class _HomeViewState extends State<HomeView> {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       StyledText(
-                                        text: '${listSnap[index]['taskDate']}',
+                                        text: '${listSnap[index]['date']}',
                                         color: ColorConstants.textColor,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       SizedBox(
                                           height: context.dynamicHeight(0.01)),
                                       StyledText(
-                                        text: '${listSnap[index]['taskTime']}',
+                                        text: '${listSnap[index]['time']}',
                                         color: ColorConstants.textColor,
                                       ),
                                     ],
@@ -226,7 +226,7 @@ class _HomeViewState extends State<HomeView> {
 
   StyledText _taskName(List<DocumentSnapshot<Object?>> listSnap, int index) {
     return StyledText(
-        text: '${listSnap[index]['taskName']}',
+        text: '${listSnap[index]['name']}',
         color: ColorConstants.textColor,
         fontSize: 20,
         fontWeight: FontWeight.bold);
@@ -234,7 +234,7 @@ class _HomeViewState extends State<HomeView> {
 
   StyledText _taskDate(List<DocumentSnapshot<Object?>> listSnap, int index) {
     return StyledText(
-      text: '${listSnap[index]['taskDate']}',
+      text: '${listSnap[index]['date']}',
       color: ColorConstants.textColor,
       fontSize: 17,
       fontWeight: FontWeight.bold,
@@ -243,7 +243,7 @@ class _HomeViewState extends State<HomeView> {
 
   StyledText _taskTime(List<DocumentSnapshot<Object?>> listSnap, int index) {
     return StyledText(
-      text: '${listSnap[index]['taskTime']}',
+      text: '${listSnap[index]['time']}',
       color: ColorConstants.textColor,
       fontSize: 17,
     );
@@ -261,7 +261,7 @@ class _HomeViewState extends State<HomeView> {
   StyledText _taskDescription(
       List<DocumentSnapshot<Object?>> listSnap, int index) {
     return StyledText(
-      text: '${listSnap[index]['taskDescription']}',
+      text: '${listSnap[index]['description']}',
       color: ColorConstants.textColor,
     );
   }

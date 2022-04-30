@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:todo_list/core/constant/svg_constant.dart';
+import 'package:todo_list/core/model/task_model.dart';
 
-class HomeController extends GetxController {
+class CompletedController extends GetxController {
+  bool taskCompleted = false;
+
+  Stream<List<Task>> completedTasks() =>
+      FirebaseFirestore.instance.collection('tasks').snapshots().map((event) =>
+          event.docs.map((doc) => Task.fromJson(doc.data())).toList());
+
   List iconBackground = [
     SvgConstant.orangeCircularIcon,
     SvgConstant.deepBlueCircularIcon,
@@ -24,9 +31,4 @@ class HomeController extends GetxController {
     SvgConstant.coding,
     SvgConstant.console,
   ];
-  final formKey = GlobalKey<FormState>();
-  TextEditingController name = TextEditingController();
-  TextEditingController description = TextEditingController();
-  TextEditingController date = TextEditingController();
-  TextEditingController time = TextEditingController();
 }
