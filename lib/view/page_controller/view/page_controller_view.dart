@@ -35,7 +35,7 @@ class _PageControllerViewState extends State<PageControllerView> {
     const HomeView(),
     const CalendarView(),
   ];
-  final pageNames = ['Yapılacaklar', 'Takvim'];
+  final pageNames = ['Görevler', 'Takvim'];
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +136,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                     children: [
                       SizedBox(height: context.dynamicHeight(0.01)),
                       const TitleTextFormField(
-                          text: 'YENİ YAPILACAK EKLE', fontSize: 23),
+                          text: 'YENİ GÖREV EKLE', fontSize: 23),
                       SizedBox(height: context.dynamicHeight(0.02)),
                       const TitleTextFormField(text: 'Simge', fontSize: 16),
                       _buildTaskListViewBuilder(context),
@@ -213,44 +213,44 @@ class _PageControllerViewState extends State<PageControllerView> {
                         ),
                       ),
                       SizedBox(height: context.dynamicHeight(0.01)),
-                      const TitleTextFormField(text: 'Saat', fontSize: 16),
-                      SizedBox(height: context.dynamicHeight(0.01)),
-                      Obx(
-                        () => TextFormField(
-                          style: GoogleFonts.getFont("Lato",
-                              color: ColorConstants.textColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                          readOnly: true,
-                          controller: controller.time.value,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.access_time_sharp,
-                              color: ColorConstants.textColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 42, vertical: 20),
-                          ),
-                          onTap: () async {
-                            final TimeOfDay? timeOfDay = await showTimePicker(
-                              context: context,
-                              initialTime: controller.selectedTime,
-                              initialEntryMode: TimePickerEntryMode.dial,
-                            );
-                            if (timeOfDay != controller.selectedTime) {
-                              setState(() {
-                                controller.selectedTime = timeOfDay!;
-                                controller.time.value = TextEditingController(
-                                    text: timeOfDay.format(context));
-                              });
-                            }
-                          },
-                        ),
-                      ),
+                      // const TitleTextFormField(text: 'Saat', fontSize: 16),
+                      // SizedBox(height: context.dynamicHeight(0.01)),
+                      // Obx(
+                      //   () => TextFormField(
+                      //     style: GoogleFonts.getFont("Lato",
+                      //         color: ColorConstants.textColor,
+                      //         fontSize: 16,
+                      //         fontWeight: FontWeight.bold),
+                      //     readOnly: true,
+                      //     controller: controller.time.value,
+                      //     decoration: InputDecoration(
+                      //       prefixIcon: const Icon(
+                      //         Icons.access_time_sharp,
+                      //         color: ColorConstants.textColor,
+                      //       ),
+                      //       border: OutlineInputBorder(
+                      //         borderRadius: BorderRadius.circular(10),
+                      //       ),
+                      //       floatingLabelBehavior: FloatingLabelBehavior.always,
+                      //       contentPadding: const EdgeInsets.symmetric(
+                      //           horizontal: 42, vertical: 20),
+                      //     ),
+                      //     onTap: () async {
+                      //       final TimeOfDay? timeOfDay = await showTimePicker(
+                      //         context: context,
+                      //         initialTime: controller.selectedTime,
+                      //         initialEntryMode: TimePickerEntryMode.dial,
+                      //       );
+                      //       if (timeOfDay != controller.selectedTime) {
+                      //         setState(() {
+                      //           controller.selectedTime = timeOfDay!;
+                      //           controller.time.value = TextEditingController(
+                      //               text: timeOfDay.format(context));
+                      //         });
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
                       SizedBox(height: context.dynamicHeight(0.03)),
                       InkWell(
                         onTap: () async {
@@ -258,7 +258,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                             'name': controller.name.text,
                             'description': controller.description.text,
                             'date': controller.date.text,
-                            'time': controller.time.value.text,
+                            // 'time': controller.time.value.text,
                             'completed': controller.completed.value,
                           };
                           await tasks.doc(randomString(10)).set(taskData);
@@ -266,7 +266,7 @@ class _PageControllerViewState extends State<PageControllerView> {
                             controller.name.clear();
                             controller.description.clear();
                             controller.date.clear();
-                            controller.time.value.clear();
+                            // controller.time.value.clear();
                           });
                           Navigator.pop(context);
                         },

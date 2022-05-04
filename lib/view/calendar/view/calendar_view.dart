@@ -81,31 +81,24 @@ class _CalendarViewState extends State<CalendarView> {
           child: Container(
             width: context.dynamicWidth(0.22),
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: (currentMonthList[index].day != currentDateTime.day)
-                        ? [
-                            Colors.white.withOpacity(0.8),
-                            Colors.white.withOpacity(0.7),
-                            Colors.white.withOpacity(0.6)
-                          ]
-                        : [
-                            HexColor("ED6184"),
-                            HexColor("EF315B"),
-                            HexColor("E2042D")
-                          ],
-                    begin: const FractionalOffset(0.0, 0.0),
-                    end: const FractionalOffset(0.0, 1.0),
-                    stops: const [0.0, 0.5, 1.0],
-                    tileMode: TileMode.clamp),
-                borderRadius: BorderRadius.circular(40),
-                boxShadow: const [
-                  BoxShadow(
-                    offset: Offset(4, 4),
-                    blurRadius: 4,
-                    spreadRadius: 2,
-                    color: Colors.black12,
-                  )
-                ]),
+              gradient: LinearGradient(
+                  colors: (currentMonthList[index].day != currentDateTime.day)
+                      ? [
+                          Colors.white.withOpacity(0.8),
+                          Colors.white.withOpacity(0.7),
+                          Colors.white.withOpacity(0.6)
+                        ]
+                      : [
+                          HexColor("ED6184"),
+                          HexColor("EF315B"),
+                          HexColor("E2042D")
+                        ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(0.0, 1.0),
+                  stops: const [0.0, 0.5, 1.0],
+                  tileMode: TileMode.clamp),
+              borderRadius: BorderRadius.circular(40),
+            ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -156,10 +149,6 @@ class _CalendarViewState extends State<CalendarView> {
               offset: Offset(4, 4),
               spreadRadius: 2)
         ],
-        borderRadius: const BorderRadius.only(
-          bottomRight: Radius.circular(40),
-          bottomLeft: Radius.circular(40),
-        ),
       ),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -173,6 +162,8 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   Widget build(BuildContext context) {
     CollectionReference tasks = firestore.collection('tasks');
+    Query<Map<String, dynamic>> taskDate =
+        firestore.collection('tasks').where('date');
     return Stack(
       children: [
         topView(),
@@ -183,7 +174,7 @@ class _CalendarViewState extends State<CalendarView> {
 
   todoList(CollectionReference<Object?> tasks) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dynamicHeight(0.30)),
+      padding: EdgeInsets.only(top: context.dynamicHeight(0.30)),
       child: StreamBuilder<QuerySnapshot>(
         stream: tasks.snapshots(),
         builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
@@ -192,6 +183,7 @@ class _CalendarViewState extends State<CalendarView> {
                 child: StyledText(text: 'Bir hata oluştu. Tekrar deneyiniz.'));
           } else {
             if (asyncSnapshot.hasData) {
+              final events = asyncSnapshot.data;
               List<DocumentSnapshot> listSnap = asyncSnapshot.data.docs;
               return Padding(
                 padding: context.paddingNormal,
@@ -206,46 +198,34 @@ class _CalendarViewState extends State<CalendarView> {
                         itemCount: listSnap.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding: context.paddingLow,
-                            child: Row(
-                              children: [
-                                StyledText(
-                                    text: '${listSnap[index]['taskTime']}',
-                                    color: ColorConstants.textColor,
-                                    fontWeight: FontWeight.bold),
-                                SizedBox(width: context.dynamicWidth(0.02)),
-                                Flexible(
-                                  child: Card(
-                                    color: Colors.white,
-                                    child: ListTile(
-                                      title: StyledText(
-                                          text:
-                                              '${listSnap[index]['taskName']}',
-                                          color: ColorConstants.textColor),
-                                      leading: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          SvgPicture.asset(
-                                            calendarController.iconBackground[
-                                                Random().nextInt(
-                                                    calendarController
-                                                        .iconBackground
-                                                        .length)],
-                                            height: context.dynamicHeight(0.05),
-                                          ),
-                                          SvgPicture.asset(
-                                            calendarController.icons[Random()
-                                                .nextInt(calendarController
-                                                    .icons.length)],
-                                            height: context.dynamicHeight(0.03),
-                                            color: Colors.white,
-                                          ),
-                                        ],
+                            padding: context.verticalPaddingNormal,
+                            child: Flexible(
+                              child: Card(
+                                color: Colors.white,
+                                child: ListTile(
+                                  title: StyledText(
+                                      text: '${listSnap[index]['name']}',
+                                      color: ColorConstants.textColor),
+                                  leading: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        calendarController.iconBackground[
+                                            Random().nextInt(calendarController
+                                                .iconBackground.length)],
+                                        height: context.dynamicHeight(0.05),
                                       ),
-                                    ),
+                                      SvgPicture.asset(
+                                        calendarController.icons[Random()
+                                            .nextInt(calendarController
+                                                .icons.length)],
+                                        height: context.dynamicHeight(0.03),
+                                        color: Colors.white,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           );
                         },

@@ -26,6 +26,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     CollectionReference tasks = firestore.collection('tasks');
+
     return SingleChildScrollView(
       child: StreamBuilder<QuerySnapshot>(
         stream: tasks.snapshots(),
@@ -36,6 +37,7 @@ class _HomeViewState extends State<HomeView> {
           } else {
             if (asyncSnapshot.hasData) {
               List<DocumentSnapshot> listSnap = asyncSnapshot.data.docs;
+
               return Padding(
                 padding: context.paddingMedium,
                 child: Column(
@@ -46,104 +48,105 @@ class _HomeViewState extends State<HomeView> {
                       shrinkWrap: true,
                       itemCount: listSnap.length,
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: context.paddingLow,
-                          child: Dismissible(
-                            background: Container(
-                              margin: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  gradient: LinearGradient(colors: [
-                                    ColorConstants.orange,
-                                    ColorConstants.pink
-                                  ])),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                    padding: EdgeInsets.only(
-                                        left: context.dynamicWidth(0.05)),
-                                    child: StyledText.titleFontText(
-                                      text: 'TAMAMLANDI',
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontsize: 25,
-                                    )),
-                              ),
-                            ),
-                            secondaryBackground: const DismissibleDeleteTask(),
-                            key: UniqueKey(),
-                            onDismissed: (direction) {
-                              if (direction == DismissDirection.startToEnd) {
-                                Get.snackbar(
-                                    'Görevi Başarıyla Tamamlandılara Ekledin',
-                                    '${listSnap[index]['name']} Görev tamamlandı.',
-                                    colorText: Colors.white,
-                                    backgroundColor: Colors.green,
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    icon: const Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                    ));
-                              } else {
-                                listSnap[index].reference.delete();
-                                Get.snackbar('Görev Başarıyla Kaldırıldı',
-                                    '${listSnap[index]['name']} Görevi kaldırdın.',
-                                    colorText: Colors.white,
-                                    backgroundColor: Colors.red,
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.white));
-                              }
-                            },
-                            child: Card(
-                              color: Colors.white,
-                              child: ListTile(
-                                  onTap: () {
-                                    _showTaskDetailDialog(
-                                        context, index, listSnap);
-                                  },
-                                  title: StyledText(
-                                      text: '${listSnap[index]['name']}',
-                                      color: ColorConstants.textColor),
-                                  leading: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        controller.iconBackground[Random()
-                                            .nextInt(controller
-                                                .iconBackground.length)],
-                                        height: context.dynamicHeight(0.05),
-                                      ),
-                                      SvgPicture.asset(
-                                        controller.icons[Random()
-                                            .nextInt(controller.icons.length)],
-                                        height: context.dynamicHeight(0.03),
-                                        color: Colors.white,
-                                      ),
-                                    ],
+                        return listSnap[index]['completed']
+                            ? const Visibility(child: Text(''), visible: false)
+                            : Padding(
+                                padding: context.paddingLow,
+                                child: Dismissible(
+                                  background: Container(
+                                    margin: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        gradient: LinearGradient(colors: [
+                                          ColorConstants.orange,
+                                          ColorConstants.pink
+                                        ])),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: context.dynamicWidth(0.05)),
+                                          child: StyledText.titleFontText(
+                                            text: 'TAMAMLANDI',
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontsize: 25,
+                                          )),
+                                    ),
                                   ),
-                                  trailing: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      StyledText(
-                                        text: '${listSnap[index]['date']}',
-                                        color: ColorConstants.textColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      SizedBox(
-                                          height: context.dynamicHeight(0.01)),
-                                      StyledText(
-                                        text: '${listSnap[index]['time']}',
-                                        color: ColorConstants.textColor,
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                          ),
-                        );
+                                  secondaryBackground:
+                                      const DismissibleDeleteTask(),
+                                  key: UniqueKey(),
+                                  onDismissed: (direction) async {
+                                    if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      Map<String, dynamic> taskData = {
+                                        'name': listSnap[index]['name'],
+                                        'description': listSnap[index]
+                                            ['description'],
+                                        'date': listSnap[index]['date'],
+                                        // 'time': listSnap[index]['time'],
+                                        'completed': true,
+                                      };
+                                      await tasks
+                                          .doc((listSnap[index].id))
+                                          .set(taskData);
+                                      Get.snackbar(
+                                          'Görevi Başarıyla Tamamlandılara Ekledin',
+                                          '${listSnap[index]['name']} Görev tamamlandı.',
+                                          colorText: Colors.white,
+                                          backgroundColor: Colors.green,
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          icon: const Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                          ));
+                                    } else {
+                                      listSnap[index].reference.delete();
+                                      Get.snackbar('Görev Başarıyla Kaldırıldı',
+                                          '${listSnap[index]['name']} Görevi kaldırdın.',
+                                          colorText: Colors.white,
+                                          backgroundColor: Colors.red,
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.white));
+                                    }
+                                  },
+                                  child: Card(
+                                    color: Colors.white,
+                                    child: ListTile(
+                                        onTap: () {
+                                          _showTaskDetailDialog(
+                                              context, index, listSnap);
+                                        },
+                                        title: StyledText(
+                                            text: '${listSnap[index]['name']}',
+                                            color: ColorConstants.textColor),
+                                        leading: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                              controller.iconBackground[Random()
+                                                  .nextInt(controller
+                                                      .iconBackground.length)],
+                                              height:
+                                                  context.dynamicHeight(0.05),
+                                            ),
+                                            SvgPicture.asset(
+                                              controller.icons[Random().nextInt(
+                                                  controller.icons.length)],
+                                              height:
+                                                  context.dynamicHeight(0.03),
+                                              color: Colors.white,
+                                            ),
+                                          ],
+                                        ),
+                                        trailing: homeTaskDateInfo(
+                                            listSnap, index, context)),
+                                  ),
+                                ),
+                              );
                       },
                     ),
                   ],
@@ -155,6 +158,27 @@ class _HomeViewState extends State<HomeView> {
           }
         },
       ),
+    );
+  }
+
+  Column homeTaskDateInfo(List<DocumentSnapshot<Object?>> listSnap, int index,
+      BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        StyledText(
+          text: '${listSnap[index]['date']}',
+          color: ColorConstants.textColor,
+          fontWeight: FontWeight.bold,
+        ),
+        // SizedBox(height: context.dynamicHeight(0.01)),
+        // StyledText(
+        //   text: '${listSnap[index]['time']}',
+        //   color: ColorConstants.textColor,
+        // ),
+      ],
     );
   }
 

@@ -37,6 +37,7 @@ class PageViewController extends GetxController {
   TextEditingController date = TextEditingController();
   TimeOfDay selectedTime = TimeOfDay.now();
   final time = TextEditingController().obs;
+  DateTime currentDate = DateTime.now();
 
   RxBool completed = false.obs;
 

@@ -17,4 +17,6 @@ class CalendarController extends GetxController {
   final formKey = GlobalKey<FormState>();
   TextEditingController taskName = TextEditingController();
   TextEditingController taskDescription = TextEditingController();
+  TextEditingController date = TextEditingController();
+  TextEditingController time = TextEditingController();
 }
