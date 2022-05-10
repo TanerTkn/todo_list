@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,7 +15,6 @@ import 'package:kartal/kartal.dart';
 import 'package:todo_list/view/page_controller/controller/page_controller.dart';
 import 'package:todo_list/widgets/page_controller/custom_bottom_bar.dart';
 import 'package:todo_list/widgets/page_controller/title_text.dart';
-import 'dart:math' show Random;
 
 class PageControllerView extends StatefulWidget {
   const PageControllerView({Key? key}) : super(key: key);
@@ -30,6 +27,11 @@ class _PageControllerViewState extends State<PageControllerView> {
   PageViewController controller = Get.put(PageViewController());
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  var now = DateTime.now();
+  var formatter = DateFormat('dd/MM/yy');
+  late String formattedDate;
+  // DateTime? date = DateTime.now();
   int currentIndex = 0;
   final pages = [
     const HomeView(),
@@ -96,6 +98,11 @@ class _PageControllerViewState extends State<PageControllerView> {
                         svgButton: SvgConstant.blueCircularButton,
                         iconHeight: context.dynamicHeight(0.02),
                         onTap: () async {
+                          int listLength = controller.isSelectedIcon.length;
+                          controller.isSelectedIcon = [];
+                          for (var i = 0; i < listLength; i++) {
+                            controller.changeAllIconStatus();
+                          }
                           await _addTaskFunction(context, tasks);
                         },
                       ),
@@ -112,183 +119,136 @@ class _PageControllerViewState extends State<PageControllerView> {
 
   _addTaskFunction(
       BuildContext context, CollectionReference<Object?> tasks) async {
+    formattedDate = formatter.format(now);
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return Wrap(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24)),
-                ),
-                height: context.dynamicHeight(0.95),
-                width: double.infinity,
-                child: Padding(
-                  padding: context.paddingMedium,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: context.dynamicHeight(0.01)),
-                      const TitleTextFormField(
-                          text: 'YENİ GÖREV EKLE', fontSize: 23),
-                      SizedBox(height: context.dynamicHeight(0.02)),
-                      const TitleTextFormField(text: 'Simge', fontSize: 16),
-                      _buildTaskListViewBuilder(context),
-                      SizedBox(height: context.dynamicHeight(0.01)),
-                      Form(
-                        key: controller.formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              style: controller.textStyle,
-                              controller: controller.name,
-                              decoration: InputDecoration(
-                                  labelStyle: controller.titleStyle,
-                                  border: const UnderlineInputBorder(),
-                                  labelText: 'Başlık'),
-                            ),
-                            SizedBox(height: context.dynamicHeight(0.03)),
-                            const TitleTextFormField(
-                                text: 'Açıklama', fontSize: 16),
-                            SizedBox(height: context.dynamicHeight(0.02)),
-                            TextField(
-                              style: controller.textStyle,
-                              maxLines: 5,
-                              controller: controller.description,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
+          return StatefulBuilder(builder: (context, setState) {
+            return Wrap(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24)),
+                  ),
+                  height: context.dynamicHeight(0.95),
+                  width: double.infinity,
+                  child: Padding(
+                    padding: context.paddingMedium,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: context.dynamicHeight(0.01)),
+                        const TitleTextFormField(
+                            text: 'YENİ GÖREV EKLE', fontSize: 23),
+                        SizedBox(height: context.dynamicHeight(0.02)),
+                        const TitleTextFormField(
+                            text: 'Simge Seçiniz', fontSize: 16),
+                        _buildTaskListViewBuilder(context),
+                        SizedBox(height: context.dynamicHeight(0.01)),
+                        Form(
+                          key: controller.formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextField(
+                                style: controller.textStyle,
+                                controller: controller.name,
+                                decoration: InputDecoration(
+                                    labelStyle: controller.titleStyle,
+                                    border: const UnderlineInputBorder(),
+                                    labelText: 'Başlık'),
+                              ),
+                              SizedBox(height: context.dynamicHeight(0.03)),
+                              const TitleTextFormField(
+                                  text: 'Açıklama', fontSize: 16),
+                              SizedBox(height: context.dynamicHeight(0.02)),
+                              TextField(
+                                style: controller.textStyle,
+                                maxLines: 5,
+                                controller: controller.description,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: context.dynamicHeight(0.02)),
-                            const TitleTextFormField(
-                                text: 'Tarih', fontSize: 16),
-                            SizedBox(height: context.dynamicHeight(0.02)),
-                            TextFormField(
-                              style: GoogleFonts.getFont("Lato",
-                                  color: ColorConstants.textColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                              readOnly: true,
-                              controller: controller.date,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(
-                                  Icons.date_range,
-                                  color: ColorConstants.textColor,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 42, vertical: 20),
+                              SizedBox(height: context.dynamicHeight(0.02)),
+                              const TitleTextFormField(
+                                  text: 'Tarih', fontSize: 16),
+                              SizedBox(height: context.dynamicHeight(0.02)),
+                              Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () async {
+                                        await _showDatePicker(context)
+                                            .then((selectedDate) {
+                                          if (selectedDate != null) {
+                                            setState(() {
+                                              // date = selectedDate;
+
+                                              formattedDate = formatter
+                                                  .format(selectedDate);
+                                            });
+                                          }
+                                        });
+                                      },
+                                      icon: const Icon(Icons.add)),
+                                  StyledText(text: (formattedDate))
+                                ],
                               ),
-                              onTap: () async {
-                                await _showDatePicker(context)
-                                    .then((selectedDate) {
-                                  if (selectedDate != null) {
-                                    controller.date.text =
-                                        DateFormat('dd-MM-yyyy')
-                                            .format(selectedDate);
-                                  }
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter date.';
-                                }
-                                return null;
-                              },
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: context.dynamicHeight(0.01)),
-                      // const TitleTextFormField(text: 'Saat', fontSize: 16),
-                      // SizedBox(height: context.dynamicHeight(0.01)),
-                      // Obx(
-                      //   () => TextFormField(
-                      //     style: GoogleFonts.getFont("Lato",
-                      //         color: ColorConstants.textColor,
-                      //         fontSize: 16,
-                      //         fontWeight: FontWeight.bold),
-                      //     readOnly: true,
-                      //     controller: controller.time.value,
-                      //     decoration: InputDecoration(
-                      //       prefixIcon: const Icon(
-                      //         Icons.access_time_sharp,
-                      //         color: ColorConstants.textColor,
-                      //       ),
-                      //       border: OutlineInputBorder(
-                      //         borderRadius: BorderRadius.circular(10),
-                      //       ),
-                      //       floatingLabelBehavior: FloatingLabelBehavior.always,
-                      //       contentPadding: const EdgeInsets.symmetric(
-                      //           horizontal: 42, vertical: 20),
-                      //     ),
-                      //     onTap: () async {
-                      //       final TimeOfDay? timeOfDay = await showTimePicker(
-                      //         context: context,
-                      //         initialTime: controller.selectedTime,
-                      //         initialEntryMode: TimePickerEntryMode.dial,
-                      //       );
-                      //       if (timeOfDay != controller.selectedTime) {
-                      //         setState(() {
-                      //           controller.selectedTime = timeOfDay!;
-                      //           controller.time.value = TextEditingController(
-                      //               text: timeOfDay.format(context));
-                      //         });
-                      //       }
-                      //     },
-                      //   ),
-                      // ),
-                      SizedBox(height: context.dynamicHeight(0.03)),
-                      InkWell(
-                        onTap: () async {
-                          Map<String, dynamic> taskData = {
-                            'name': controller.name.text,
-                            'description': controller.description.text,
-                            'date': controller.date.text,
-                            // 'time': controller.time.value.text,
-                            'completed': controller.completed.value,
-                          };
-                          await tasks.doc(randomString(10)).set(taskData);
-                          setState(() {
-                            controller.name.clear();
-                            controller.description.clear();
-                            controller.date.clear();
-                            // controller.time.value.clear();
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              SvgConstant.addRectangleButton,
-                            ),
-                            const TitleTextFormField(
-                                color: Colors.white,
-                                text: 'EKLE',
-                                fontSize: 18),
-                          ],
-                        ),
-                      )
-                    ],
+                        SizedBox(height: context.dynamicHeight(0.01)),
+                        SizedBox(height: context.dynamicHeight(0.03)),
+                        InkWell(
+                          onTap: () async {
+                            if (controller.isSelectedIcon.contains(true)) {
+                              Map<String, dynamic> taskData = {
+                                'name': controller.name.text,
+                                'description': controller.description.text,
+                                'date': formattedDate,
+                                'completed': controller.completed.value,
+                                'selectedIconIndex':
+                                    controller.isSelectedIcon.indexOf(true)
+                              };
+                              await tasks.doc(randomString(10)).set(taskData);
+                              setState(() {
+                                controller.name.clear();
+                                controller.description.clear();
+                                formattedDate = '';
+                              });
+                              Navigator.pop(context);
+                            } else {
+                              Get.snackbar('hata', 'bir simge seciniz');
+                            }
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                SvgConstant.addRectangleButton,
+                              ),
+                              const TitleTextFormField(
+                                  color: Colors.white,
+                                  text: 'EKLE',
+                                  fontSize: 18),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
+              ],
+            );
+          });
         });
   }
 
@@ -328,20 +288,45 @@ class _PageControllerViewState extends State<PageControllerView> {
           itemBuilder: (context, index) {
             return Padding(
               padding: context.paddingLow,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SvgPicture.asset(
-                    controller.iconBackground[
-                        Random().nextInt(controller.iconBackground.length)],
-                    height: context.dynamicHeight(0.05),
+              child: Obx(
+                () => Container(
+                  decoration: BoxDecoration(
+                      color: controller.isSelectedIcon.isEmpty
+                          ? Colors.transparent
+                          : controller.isSelectedIcon[index]
+                              ? Colors.green
+                              : Colors.transparent,
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (controller.isSelectedIcon[index]) {
+                        controller.changeSelectedIconStatus(index, false);
+                      } else {
+                        int listLength = controller.isSelectedIcon.length;
+                        controller.isSelectedIcon = [];
+                        for (var i = 0; i < listLength; i++) {
+                          controller.changeAllIconStatus();
+                        }
+                        controller.changeSelectedIconStatus(index, true);
+                      }
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          controller.iconBackground[index],
+                          height: context.dynamicHeight(0.05),
+                        ),
+                        SvgPicture.asset(
+                          controller.icons[index],
+                          height: context.dynamicHeight(0.03),
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
                   ),
-                  SvgPicture.asset(
-                    controller.icons[Random().nextInt(controller.icons.length)],
-                    height: context.dynamicHeight(0.03),
-                    color: Colors.white,
-                  ),
-                ],
+                ),
               ),
             );
           },

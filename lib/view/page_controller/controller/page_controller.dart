@@ -30,11 +30,26 @@ class PageViewController extends GetxController {
     SvgConstant.console,
     SvgConstant.coding,
   ];
+  final _isSelectedIcon = [
+    false,
+    false,
+    false,
+    false,
+  ].obs;
+  List<bool> get isSelectedIcon => _isSelectedIcon;
+  set isSelectedIcon(List<bool> list) => _isSelectedIcon.value = list;
+  void changeSelectedIconStatus(int index, bool value) {
+    _isSelectedIcon[index] = value;
+  }
+
+  void changeAllIconStatus() {
+    _isSelectedIcon.add(false);
+  }
 
   final formKey = GlobalKey<FormState>();
   TextEditingController name = TextEditingController();
   TextEditingController description = TextEditingController();
-  TextEditingController date = TextEditingController();
+
   TimeOfDay selectedTime = TimeOfDay.now();
   final time = TextEditingController().obs;
   DateTime currentDate = DateTime.now();

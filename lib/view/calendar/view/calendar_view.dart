@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_list/core/model/task_model.dart';
 import 'package:todo_list/styled_text.dart';
 import 'package:todo_list/view/calendar/controller/calendar_controller.dart';
 import 'package:todo_list/widgets/calendar/color_utils.dart';
@@ -29,8 +31,13 @@ class _CalendarViewState extends State<CalendarView> {
   DateTime currentDateTime = DateTime.now();
   TextEditingController controller = TextEditingController();
 
+  List<Task> taskList = [];
+  bool isLoadList = false;
+  bool isLoadListEmpty = false;
+
   @override
   void initState() {
+    _buildFetchTodoList(0, true);
     currentMonthList = date_util.DateUtils.daysInMonth(currentDateTime);
     currentMonthList.sort((a, b) => a.day.compareTo(b.day));
     currentMonthList = currentMonthList.toSet().toList();
@@ -73,10 +80,8 @@ class _CalendarViewState extends State<CalendarView> {
     return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
         child: GestureDetector(
-          onTap: () {
-            setState(() {
-              currentDateTime = currentMonthList[index];
-            });
+          onTap: () async {
+            await _buildFetchTodoList(index, false);
           },
           child: Container(
             width: context.dynamicWidth(0.22),
@@ -127,6 +132,46 @@ class _CalendarViewState extends State<CalendarView> {
         ));
   }
 
+  Future<void> _buildFetchTodoList(int index, bool isFirstLoad) async {
+    setState(() {
+      isLoadList = false;
+    });
+    if (!isFirstLoad) {
+      setState(() {
+        currentDateTime = currentMonthList[index];
+      });
+    }
+
+    taskList.clear();
+
+    var formatter = DateFormat('dd/MM/yy');
+    String formattedDate = formatter
+        .format(isFirstLoad ? DateTime.now() : currentMonthList[index]);
+    await FirebaseFirestore.instance
+        .collection('tasks')
+        .where('date', isEqualTo: formattedDate)
+        .get()
+        .then((s) {
+      for (var i = 0; i < s.docs.length; i++) {
+        setState(() {
+          taskList.add(Task.fromJson(s.docs[i].data()));
+        });
+      }
+      if (taskList.isEmpty) {
+        setState(() {
+          isLoadListEmpty = true;
+          isLoadList = true;
+        });
+      } else {
+        setState(() {
+          isLoadListEmpty = false;
+
+          isLoadList = true;
+        });
+      }
+    });
+  }
+
   Widget topView() {
     return Container(
       height: context.dynamicHeight(0.35),
@@ -162,8 +207,7 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   Widget build(BuildContext context) {
     CollectionReference tasks = firestore.collection('tasks');
-    Query<Map<String, dynamic>> taskDate =
-        firestore.collection('tasks').where('date');
+
     return Stack(
       children: [
         topView(),
@@ -175,70 +219,59 @@ class _CalendarViewState extends State<CalendarView> {
   todoList(CollectionReference<Object?> tasks) {
     return Padding(
       padding: EdgeInsets.only(top: context.dynamicHeight(0.30)),
-      child: StreamBuilder<QuerySnapshot>(
-        stream: tasks.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
-          if (asyncSnapshot.hasError) {
-            return const Center(
-                child: StyledText(text: 'Bir hata oluştu. Tekrar deneyiniz.'));
-          } else {
-            if (asyncSnapshot.hasData) {
-              final events = asyncSnapshot.data;
-              List<DocumentSnapshot> listSnap = asyncSnapshot.data.docs;
-              return Padding(
-                padding: context.paddingNormal,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: context.dynamicHeight(0.03)),
-                    Flexible(
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: listSnap.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: context.verticalPaddingNormal,
-                            child: Flexible(
-                              child: Card(
-                                color: Colors.white,
-                                child: ListTile(
-                                  title: StyledText(
-                                      text: '${listSnap[index]['name']}',
-                                      color: ColorConstants.textColor),
-                                  leading: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        calendarController.iconBackground[
-                                            Random().nextInt(calendarController
-                                                .iconBackground.length)],
-                                        height: context.dynamicHeight(0.05),
-                                      ),
-                                      SvgPicture.asset(
-                                        calendarController.icons[Random()
-                                            .nextInt(calendarController
-                                                .icons.length)],
-                                        height: context.dynamicHeight(0.03),
-                                        color: Colors.white,
-                                      ),
-                                    ],
+      child: Padding(
+        padding: context.paddingNormal,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: context.dynamicHeight(0.03)),
+            Flexible(
+              child: !isLoadList
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : isLoadListEmpty
+                      ? const Center(
+                          child: Text('bu gune ait todo yok'),
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: taskList.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: context.verticalPaddingNormal,
+                              child: Flexible(
+                                child: Card(
+                                  color: Colors.white,
+                                  child: ListTile(
+                                    title: StyledText(
+                                        text: taskList[index].name,
+                                        color: ColorConstants.textColor),
+                                    leading: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          calendarController.iconBackground[
+                                              taskList[index].selectedIconIndex],
+                                          height: context.dynamicHeight(0.05),
+                                        ),
+                                        SvgPicture.asset(
+                                          calendarController.icons[taskList[index].selectedIconIndex],
+                                          height: context.dynamicHeight(0.03),
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          }
-        },
+                            );
+                          },
+                        ),
+            ),
+          ],
+        ),
       ),
     );
   }

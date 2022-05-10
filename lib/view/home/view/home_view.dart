@@ -86,6 +86,7 @@ class _HomeViewState extends State<HomeView> {
                                         'description': listSnap[index]
                                             ['description'],
                                         'date': listSnap[index]['date'],
+
                                         // 'time': listSnap[index]['time'],
                                         'completed': true,
                                       };
@@ -127,15 +128,12 @@ class _HomeViewState extends State<HomeView> {
                                           alignment: Alignment.center,
                                           children: [
                                             SvgPicture.asset(
-                                              controller.iconBackground[Random()
-                                                  .nextInt(controller
-                                                      .iconBackground.length)],
+                                              controller.iconBackground[listSnap[index]['selectedIconIndex']],
                                               height:
                                                   context.dynamicHeight(0.05),
                                             ),
                                             SvgPicture.asset(
-                                              controller.icons[Random().nextInt(
-                                                  controller.icons.length)],
+                                              controller.icons[listSnap[index]['selectedIconIndex']],
                                               height:
                                                   context.dynamicHeight(0.03),
                                               color: Colors.white,
@@ -163,13 +161,14 @@ class _HomeViewState extends State<HomeView> {
 
   Column homeTaskDateInfo(List<DocumentSnapshot<Object?>> listSnap, int index,
       BuildContext context) {
+    var dateString = (listSnap[index]['date']);
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         StyledText(
-          text: '${listSnap[index]['date']}',
+          text: dateString,
           color: ColorConstants.textColor,
           fontWeight: FontWeight.bold,
         ),
